@@ -1,0 +1,43 @@
+checks for molecules:
+  # Table is populated
+  - row_count > 0
+
+  # Core columns are never null
+  - missing_count(dataset_id) = 0
+  - missing_count(smiles) = 0
+
+  # The dataset processed by this run actually landed
+  - current_dataset_rows > 0:
+      current_dataset_rows query: |
+        SELECT count(*) FROM silver.molecules WHERE dataset_id = '${dataset_id}'
+      name: Molecules exist for the current run dataset
+
+  # No duplicate SMILES within a single dataset
+  - duplicate_within_dataset = 0:
+      duplicate_within_dataset query: |
+        SELECT count(*) FROM (
+          SELECT smiles
+          FROM silver.molecules
+          WHERE dataset_id = '${dataset_id}'
+          GROUP BY smiles
+          HAVING count(*) > 1
+        ) duplicates
+      name: No duplicate SMILES within the current dataset
+
+checks for properties:
+  - row_count > 0
+  - missing_count(dataset_id) = 0
+  - missing_count(smiles) = 0
+
+  # Physicochemical properties are physically sane
+  - invalid_count(mol_weight) = 0:
+      valid min: 0
+  - invalid_count(hba) = 0:
+      valid min: 0
+  - invalid_count(hbd) = 0:
+      valid min: 0
+
+  - current_dataset_rows > 0:
+      current_dataset_rows query: |
+        SELECT count(*) FROM silver.properties WHERE dataset_id = '${dataset_id}'
+      name: Properties exist for the current run dataset

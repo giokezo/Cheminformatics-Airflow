@@ -1,0 +1,27 @@
+checks for clusters:
+  # Table is populated
+  - row_count > 0
+
+  # Every clustered molecule has a dataset and a cluster id
+  - missing_count(dataset_id) = 0
+  - missing_count(cluster_id) = 0
+
+  # Cluster ids are non-negative (K-means labels start at 0)
+  - invalid_count(cluster_id) = 0:
+      valid min: 0
+
+  # The dataset processed by this run actually landed
+  - current_dataset_rows > 0:
+      current_dataset_rows query: |
+        SELECT count(*) FROM gold.clusters WHERE dataset_id = '${dataset_id}'
+      name: Clusters exist for the current run dataset
+
+  # Every generated molecule got assigned to a cluster (no orphans)
+  - unclustered_molecules = 0:
+      unclustered_molecules query: |
+        SELECT count(*)
+        FROM silver.molecules m
+        LEFT JOIN gold.clusters c
+          ON c.dataset_id = m.dataset_id AND c.smiles = m.smiles
+        WHERE m.dataset_id = '${dataset_id}' AND c.id IS NULL
+      name: All molecules are assigned to a cluster
