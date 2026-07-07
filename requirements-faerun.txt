@@ -1,0 +1,6 @@
+# Optional, heavy dependencies for the Faerun/tmap visualization step (run_faerun=True).
+# tmap ships native extensions and is easiest to install from conda-forge; installing it into the
+# Airflow image can be slow/brittle, so it is kept out of the default requirements.txt.
+# To enable the faerun task, add these to the image build (or _PIP_ADDITIONAL_REQUIREMENTS).
+faerun>=0.4.0
+tmap-viz>=1.2.0
