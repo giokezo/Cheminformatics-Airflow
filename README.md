@@ -92,6 +92,18 @@ bucket.
 - **Step 2 (weekly batch):** `cheminformatics_scheduler_dag` runs on `@weekly` and processes every
   dataset that appeared since the last run. Set conf `{"overwrite": true}` to reprocess everything.
 
+## Tests
+
+Unit tests cover the pure logic (generation, properties, clustering, fingerprints, SMILES/dataframe
+helpers). The Airflow-dependent imports live inside the task callables, so the tests run in a plain
+virtualenv without Airflow:
+
+```bash
+python -m venv .venv
+.venv/bin/pip install -r requirements-dev.txt
+.venv/bin/pytest tests/ -v
+```
+
 ## Branch policy
 
 `feature -> dev -> prod`. Feature branches are cut from `dev`; PRs merge into `dev`; `dev` is
