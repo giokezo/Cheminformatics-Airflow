@@ -2,7 +2,6 @@ import itertools
 import logging
 
 import pandas as pd
-from rdkit import Chem
 
 from .constants import (
     DEFAULT_MAX_MOLECULES,
@@ -21,6 +20,8 @@ def _attachment_points(mol):
 
 def _prepare_scaffold(scaffold_smiles):
     """Parse a scaffold and number its attachment points [*:1], [*:2], … for molzip."""
+    from rdkit import Chem
+
     mol = Chem.MolFromSmiles(scaffold_smiles)
     if mol is None:
         raise ValueError(f'Invalid scaffold SMILES: {scaffold_smiles!r}')
@@ -34,6 +35,8 @@ def _prepare_scaffold(scaffold_smiles):
 
 def _prepare_r_group(r_group_smiles, map_num):
     """Parse an R-group (exactly one attachment point) and tag its dummy with ``map_num``."""
+    from rdkit import Chem
+
     mol = Chem.MolFromSmiles(r_group_smiles)
     if mol is None:
         raise ValueError(f'Invalid R-group SMILES: {r_group_smiles!r}')
@@ -45,6 +48,8 @@ def _prepare_r_group(r_group_smiles, map_num):
 
 
 def _assemble(scaffold_mol, r_group_mols):
+    from rdkit import Chem
+
     combined = scaffold_mol
     for r_group_mol in r_group_mols:
         combined = Chem.CombineMols(combined, r_group_mol)

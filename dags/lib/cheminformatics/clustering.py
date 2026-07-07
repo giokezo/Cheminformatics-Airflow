@@ -1,9 +1,6 @@
 import logging
 
-import numpy as np
 import pandas as pd
-from rdkit import Chem
-from sklearn.cluster import KMeans
 
 from .constants import (
     CLUSTERS_TABLE,
@@ -21,6 +18,10 @@ logger = logging.getLogger(__name__)
 
 def cluster_molecules_frame(dataset_id, smiles_values, fingerprint_name, n_clusters):
     """K-means cluster molecules by fingerprint. Returns DataFrame[dataset_id, smiles, cluster_id]."""
+    import numpy as np
+    from rdkit import Chem
+    from sklearn.cluster import KMeans
+
     strategy = FingerprintFactory.create(fingerprint_name)
 
     smiles_list = []

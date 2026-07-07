@@ -1,9 +1,9 @@
-from lib.cheminformatics.properties import PROPERTIES, calculate_properties_frame
+from lib.cheminformatics.properties import PROPERTY_NAMES, calculate_properties_frame
 
 
 def test_columns_match_property_set():
     df = calculate_properties_frame('d', ['Cc1ccccc1'])
-    assert list(df.columns) == ['dataset_id', 'smiles', *PROPERTIES.keys()]
+    assert list(df.columns) == ['dataset_id', 'smiles', *PROPERTY_NAMES]
 
 
 def test_values_are_physically_sane():

@@ -5,11 +5,7 @@ import tempfile
 import zipfile
 
 import pandas as pd
-from airflow.sdk import Variable
-from rdkit import Chem
 
-from ..utils.smiles import split_valid_invalid
-from .artifacts import read_results_csv, write_results_bytes
 from .constants import DEFAULT_FINGERPRINT, FINGERPRINT_VARIABLE
 from .fingerprints import FingerprintFactory
 
@@ -106,6 +102,12 @@ def build_graph_archive(fingerprints, df, plot_name=DEFAULT_PLOT_NAME, layout_k=
 
 
 def build_faerun_graph(params):
+    from airflow.sdk import Variable
+    from rdkit import Chem
+
+    from ..utils.smiles import split_valid_invalid
+    from .artifacts import read_results_csv, write_results_bytes
+
     dataset_id = params['dataset_id']
     fingerprint_name = Variable.get(FINGERPRINT_VARIABLE, DEFAULT_FINGERPRINT)
 

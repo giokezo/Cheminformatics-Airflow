@@ -1,26 +1,33 @@
 import logging
 
 import pandas as pd
-from rdkit import Chem
-from rdkit.Chem import Descriptors, rdMolDescriptors
 
 from .constants import DWH_CONN_ID, PROPERTIES_TABLE, SILVER_SCHEMA
 
 logger = logging.getLogger(__name__)
 
-PROPERTIES = {
-    'mol_weight': Descriptors.MolWt,
-    'log_p': Descriptors.MolLogP,
-    'tpsa': Descriptors.TPSA,
-    'hba': rdMolDescriptors.CalcNumHBA,
-    'hbd': rdMolDescriptors.CalcNumHBD,
-    'rotatable_bonds': rdMolDescriptors.CalcNumRotatableBonds,
-    'aromatic_rings': rdMolDescriptors.CalcNumAromaticRings,
-}
+PROPERTY_NAMES = ['mol_weight', 'log_p', 'tpsa', 'hba', 'hbd', 'rotatable_bonds', 'aromatic_rings']
+
+
+def _property_functions():
+    from rdkit.Chem import Descriptors, rdMolDescriptors
+
+    return {
+        'mol_weight': Descriptors.MolWt,
+        'log_p': Descriptors.MolLogP,
+        'tpsa': Descriptors.TPSA,
+        'hba': rdMolDescriptors.CalcNumHBA,
+        'hbd': rdMolDescriptors.CalcNumHBD,
+        'rotatable_bonds': rdMolDescriptors.CalcNumRotatableBonds,
+        'aromatic_rings': rdMolDescriptors.CalcNumAromaticRings,
+    }
 
 
 def calculate_properties_frame(dataset_id, smiles_values):
     """Compute the physicochemical property set for each valid SMILES."""
+    from rdkit import Chem
+
+    property_functions = _property_functions()
     rows = []
     failed = 0
     for smiles in smiles_values:
@@ -29,13 +36,13 @@ def calculate_properties_frame(dataset_id, smiles_values):
             failed += 1
             continue
         row = {'dataset_id': dataset_id, 'smiles': smiles}
-        for name, function in PROPERTIES.items():
+        for name, function in property_functions.items():
             row[name] = round(function(mol), 4)
         rows.append(row)
 
     if failed:
         logger.warning(f'Skipped {failed} molecules with invalid SMILES during property calculation')
-    columns = ['dataset_id', 'smiles', *PROPERTIES.keys()]
+    columns = ['dataset_id', 'smiles', *PROPERTY_NAMES]
     return pd.DataFrame(rows, columns=columns)
 
 
