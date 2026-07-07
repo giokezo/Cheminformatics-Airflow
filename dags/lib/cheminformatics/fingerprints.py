@@ -1,19 +1,17 @@
 import abc
 
-import numpy as np
-from rdkit.Chem import AllChem, MACCSkeys
-from rdkit.Chem.rdchem import Mol
-
 
 class FingerprintStrategy(abc.ABC):
     n_bits: int
 
     @abc.abstractmethod
-    def calculate(self, mol: Mol) -> list[int]:
+    def calculate(self, mol):
         """Return indices of bits set in the fingerprint (sparse, for tmap)."""
 
-    def to_dense(self, mol: Mol) -> np.ndarray:
+    def to_dense(self, mol):
         """Return the fingerprint as a dense 0/1 vector (for K-means)."""
+        import numpy as np
+
         vector = np.zeros(self.n_bits, dtype=np.int8)
         vector[self.calculate(mol)] = 1
         return vector
@@ -23,7 +21,9 @@ class _MorganFingerprint(FingerprintStrategy):
     radius: int
     n_bits = 2048
 
-    def calculate(self, mol: Mol) -> list[int]:
+    def calculate(self, mol):
+        from rdkit.Chem import AllChem
+
         bit_vect = AllChem.GetMorganFingerprintAsBitVect(mol, self.radius, nBits=self.n_bits)
         return list(bit_vect.GetOnBits())
 
@@ -39,7 +39,9 @@ class ECFP6Fingerprint(_MorganFingerprint):
 class MACCSFingerprint(FingerprintStrategy):
     n_bits = 167
 
-    def calculate(self, mol: Mol) -> list[int]:
+    def calculate(self, mol):
+        from rdkit.Chem import MACCSkeys
+
         bit_vect = MACCSkeys.GenMACCSKeys(mol)
         return list(bit_vect.GetOnBits())
 
