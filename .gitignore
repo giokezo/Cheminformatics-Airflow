@@ -1,0 +1,24 @@
+# Secrets & local env
+.env
+
+# Local Claude Code settings
+.claude/
+
+# Airflow runtime
+logs/
+plugins/
+config/
+
+# Local warehouse data
+postgres_data/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Tooling caches
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
