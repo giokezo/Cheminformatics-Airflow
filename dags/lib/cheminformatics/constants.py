@@ -33,8 +33,9 @@ PROCESSED_TABLE = 'processed_datasets'
 # Soda data-quality checks (data source name + checks file under soda/cheminformatics/)
 SILVER_DATA_SOURCE = 'cheminformatics_silver'
 GOLD_DATA_SOURCE = 'cheminformatics_gold'
-SILVER_CHECKS_FILE = 'cheminformatics/checks_silver.yml'
-GOLD_CHECKS_FILE = 'cheminformatics/checks_gold.yml'
+MOLECULES_CHECKS_FILE = 'cheminformatics/checks_molecules.yml'
+PROPERTIES_CHECKS_FILE = 'cheminformatics/checks_properties.yml'
+CLUSTERS_CHECKS_FILE = 'cheminformatics/checks_clusters.yml'
 
 # DAG ids (the scheduler DAG fans out into runs of the processing DAG)
 PROCESSING_DAG_ID = 'cheminformatics_dag'

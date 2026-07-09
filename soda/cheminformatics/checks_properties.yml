@@ -1,0 +1,21 @@
+checks for properties:
+  # Table is populated
+  - row_count > 0
+
+  # Core columns are never null
+  - missing_count(dataset_id) = 0
+  - missing_count(smiles) = 0
+
+  # Physicochemical properties are physically sane
+  - invalid_count(mol_weight) = 0:
+      valid min: 0
+  - invalid_count(hba) = 0:
+      valid min: 0
+  - invalid_count(hbd) = 0:
+      valid min: 0
+
+  # The dataset processed by this run actually landed
+  - current_dataset_rows > 0:
+      current_dataset_rows query: |
+        SELECT count(*) FROM silver.properties WHERE dataset_id = '${dataset_id}'
+      name: Properties exist for the current run dataset
