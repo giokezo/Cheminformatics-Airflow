@@ -47,6 +47,16 @@ def discover_new_datasets(params):
 
 
 def summarize_batch(ti):
+    from ..utils.teams import send_success_card
+
     kwargs_list = ti.xcom_pull(task_ids='discover_datasets') or []
     dataset_ids = [item['conf']['dataset_id'] for item in kwargs_list]
     logger.info(f'Dispatched {len(dataset_ids)} dataset run(s): {dataset_ids}')
+
+    send_success_card(
+        'Weekly cheminformatics batch dispatched',
+        [
+            ('Datasets dispatched', len(dataset_ids)),
+            ('Ids', ', '.join(dataset_ids) or '(none)'),
+        ],
+    )
