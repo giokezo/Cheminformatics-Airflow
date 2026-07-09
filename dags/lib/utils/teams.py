@@ -1,4 +1,3 @@
-import http
 import logging
 from urllib.parse import urlencode
 
@@ -54,9 +53,16 @@ def _post_card(body):
         logging.info(f'[teams no-op] {message}')
         return
 
-    response = requests.post(webhook_url, json=message, timeout=30)
-    if response.status_code == http.HTTPStatus.OK:
-        logging.info('Teams message sent successfully')
+    # Notifications are best-effort: an unreachable/misconfigured webhook must never fail the task.
+    try:
+        response = requests.post(webhook_url, json=message, timeout=30)
+    except requests.RequestException as error:
+        logging.error(f'Could not reach Teams webhook: {error}')
+        return
+
+    # Teams incoming webhooks return 200; Power Automate flows return 202 Accepted — both are success.
+    if response.ok:
+        logging.info(f'Teams message sent successfully ({response.status_code})')
     else:
         logging.error(f'Failed to send message to Teams: {response.status_code} {response.text}')
 
